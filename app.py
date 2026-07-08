@@ -15,7 +15,7 @@ from utils.ats_score import (
 )
 from utils.experience import extract_experience
 from utils.education import extract_education
-
+from utils.summary import generate_summary
 
 # -------------------------------------------------
 # Page Configuration
@@ -133,7 +133,7 @@ if resume_files:
             resume_text = extract_text_from_pdf(resume)
 
             education = extract_education(resume_text)
-            
+
             resume_data.append({
 
                 "filename": resume.name,
@@ -236,6 +236,8 @@ if resume_files:
                     "Semantic Score": round(similarity, 2),
                 
                     "Skill Match (%)": round(skill_match, 2),
+
+                    "Summary": generate_summary(candidate),
                 
                     "Email": candidate["email"],
                 
