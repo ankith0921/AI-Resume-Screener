@@ -45,26 +45,6 @@ with col2:
 st.divider()
 
 # -------------------------------------------------
-# Dashboard Metrics
-# -------------------------------------------------
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("Candidates", 0)
-
-with col2:
-    st.metric("Average ATS", "0%")
-
-with col3:
-    st.metric("Top ATS", "0%")
-
-with col4:
-    st.metric("Avg Experience", "0 Years")
-
-st.divider()
-
-# -------------------------------------------------
 # Upload Section
 # -------------------------------------------------
 col1, col2 = st.columns(2)
@@ -110,6 +90,15 @@ with col2:
 st.divider()
 
 # -------------------------------------------------
+# Dashboard Statistics
+# -------------------------------------------------
+
+candidate_count = 0
+average_ats = 0
+top_ats = 0
+average_experience = 0
+
+# -------------------------------------------------
 # Extract Job Description
 # -------------------------------------------------
 jd_text = ""
@@ -119,7 +108,7 @@ if jd_file is not None:
     try:
         jd_text = extract_text_from_pdf(jd_file)
 
-        st.success("Job Description Uploaded Successfully")
+        st.success("Job description uploaded successfully.")
 
         with st.expander("View Extracted Job Description", expanded=True):
             st.text_area(
@@ -134,7 +123,7 @@ if jd_file is not None:
             jd_skills = extract_skills(jd_text)
 
             if jd_skills:
-                st.subheader("Required Skills")
+                st.subheader("Job Requirements")
                 st.success(" | ".join(jd_skills))
             else:
                 st.warning("No predefined skills detected in the Job Description.")
@@ -149,36 +138,39 @@ resume_data = []
 
 if resume_files:
 
-    st.header("Uploaded Resumes")
+    st.header("Resume Preview")
 
     for resume in resume_files:
 
         try:
             resume_text = extract_text_from_pdf(resume)
 
+            candidate_name = extract_name(resume_text)
             education = extract_education(resume_text)
-
+            
             resume_data.append({
-
+            
                 "filename": resume.name,
-
-                "candidate_name": extract_name(resume_text),
-
+            
+                "candidate_name": candidate_name,
+            
                 "email": extract_email(resume_text),
-
+            
                 "phone": extract_phone(resume_text),
-
+            
                 "skills": extract_skills(resume_text),
-
+            
                 "experience": extract_experience(resume_text),
-
+            
                 "education": education,
-
+            
                 "text": resume_text
-
+            
             })
-
-            with st.expander(resume.name):
+            
+            with st.expander(
+                f"{candidate_name} ({resume.name})"
+            ):
 
                 st.text_area(
                     "Extracted Resume Text",
@@ -195,15 +187,23 @@ if resume_files:
     # Rank Candidates
     # -------------------------------
     if jd_embedding is not None:
-        with st.spinner("Ranking candidates..."):
+        with st.spinner("Generating embeddings and evaluating resumes..."):
 
             ranking_results = []
 
             progress = st.progress(0)
+            status = st.empty()
 
             for i, candidate in enumerate(resume_data):
-
+            
                 progress.progress((i + 1) / len(resume_data))
+
+                name = candidate["candidate_name"]
+
+                if name == "Unknown Candidate":
+                    name = candidate["filename"]
+
+                status.text(f"Processing: {name}")
 
                 if candidate["text"].strip():
                     resume_embedding = generate_embedding(candidate["text"])
@@ -276,8 +276,11 @@ if resume_files:
                 })
 
             progress.empty()
+            status.empty()
 
-            st.header("Candidate Rankings")
+            st.success(
+                f"Successfully analyzed {len(ranking_results)} resume(s)."
+            )
 
             ranking_df = pd.DataFrame(ranking_results)
 
@@ -290,25 +293,74 @@ if resume_files:
                 ascending=False
             ).reset_index(drop=True)
 
+            # Dashboard Statistics
+
+            candidate_count = len(ranking_df)
+
+            average_ats = ranking_df["ATS Score"].mean()
+
+            top_ats = ranking_df["ATS Score"].max()
+
+            ranking_df["Experience (Years)"] = pd.to_numeric(
+                ranking_df["Experience (Years)"],
+                errors="coerce"
+            )
+
+            average_experience = ranking_df["Experience (Years)"].fillna(0).mean()
+
+            st.subheader("Recruitment Dashboard")
+
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric("Candidates", candidate_count)
+
+            with col2:
+                st.metric("Average ATS", f"{average_ats:.2f}%")
+
+            with col3:
+                st.metric("Top ATS", f"{top_ats:.2f}%")
+
+            with col4:
+                st.metric("Avg Experience", f"{average_experience:.1f} Years")
+
+            st.divider()
+
+            st.header("Candidate Ranking Results")
+
             ranking_df.index += 1
             ranking_df.index.name = "Rank"
 
-            if not ranking_df.empty:
-                st.metric(
-                    "Top ATS Score",
-                    f"{ranking_df.iloc[0]['ATS Score']}%"
-                )
+            display_df = ranking_df[
+                [
+                    "Candidate",
+                    "ATS Score",
+                    "Semantic Score",
+                    "Skill Match (%)",
+                    "Experience (Years)",
+                    "Degree"
+                ]
+            ]
 
             st.dataframe(
-                ranking_df,
+                display_df,
                 use_container_width=True
+            )
+
+            csv = display_df.to_csv(index=False).encode("utf-8")
+
+            st.download_button(
+                label="Download Ranking Report",
+                data=csv,
+                file_name="candidate_ranking.csv",
+                mime="text/csv"
             )
 # -------------------------------------------------
 # Summary
 # -------------------------------------------------
 st.divider()
 
-st.header("Upload Summary")
+st.header("Analysis Summary")
 
 col1, col2 = st.columns(2)
 
