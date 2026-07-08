@@ -9,6 +9,11 @@ from utils.parser import (
     extract_phone
 )
 from utils.skills import extract_skills
+from utils.ats_score import (
+    calculate_skill_match,
+    calculate_ats_score
+)
+
 
 
 # -------------------------------------------------
@@ -183,6 +188,16 @@ if resume_files:
                     resume_embedding
                 )
                 
+                skill_match = calculate_skill_match(
+                    candidate["skills"],
+                    jd_skills
+                )
+                
+                ats_score = calculate_ats_score(
+                    similarity,
+                    skill_match
+                )
+                
                 # Compare resume skills with JD skills
                 matched_skills = list(
                     set(candidate["skills"]) &
@@ -195,13 +210,25 @@ if resume_files:
                 )
                 
                 ranking_results.append({
+
                     "Candidate": candidate["candidate_name"],
+
+                    "ATS Score": ats_score,
+                
+                    "Semantic Score": round(similarity, 2),
+                
+                    "Skill Match (%)": round(skill_match, 2),
+                
                     "Email": candidate["email"],
+                
                     "Phone": candidate["phone"],
+                
                     "Resume": candidate["filename"],
-                    "Matched Skills": ", ".join(sorted(matched_skills)),
-                    "Missing Skills": ", ".join(sorted(missing_skills)),
-                    "Match Score (%)": similarity
+                
+                    "Matched Skills": ", ".join(sorted(matched_skills)) if matched_skills else "None",
+                
+                    "Missing Skills": ", ".join(sorted(missing_skills)) if missing_skills else "None"
+                
                 })
 
             progress.empty()
@@ -209,15 +236,24 @@ if resume_files:
             st.header("🏆 Candidate Rankings")
 
             ranking_df = pd.DataFrame(ranking_results)
-            # Round scores to 2 decimal places
-            ranking_df["Match Score (%)"] = ranking_df["Match Score (%)"].round(2)
+
+            ranking_df["Semantic Score"] = ranking_df["Semantic Score"].round(2)
+            ranking_df["Skill Match (%)"] = ranking_df["Skill Match (%)"].round(2)
+            ranking_df["ATS Score"] = ranking_df["ATS Score"].round(2)
+
             ranking_df = ranking_df.sort_values(
-                by="Match Score (%)",
+                by="ATS Score",
                 ascending=False
             ).reset_index(drop=True)
 
             ranking_df.index += 1
             ranking_df.index.name = "Rank"
+
+            if not ranking_df.empty:
+                st.metric(
+                    "🏆 Top ATS Score",
+                    f"{ranking_df.iloc[0]['ATS Score']}%"
+                )
 
             st.dataframe(
                 ranking_df,
