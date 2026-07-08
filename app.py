@@ -3,6 +3,11 @@ from utils.pdf_reader import extract_text_from_pdf
 from utils.embeddings import generate_embedding
 from utils.ranking import calculate_similarity
 import pandas as pd
+from utils.parser import (
+    extract_name,
+    extract_email,
+    extract_phone
+)
 
 # -------------------------------------------------
 # Page Configuration
@@ -112,9 +117,19 @@ if resume_files:
         try:
             resume_text = extract_text_from_pdf(resume)
 
+
             resume_data.append({
-                "name": resume.name,
+
+                "filename": resume.name,
+            
+                "candidate_name": extract_name(resume_text),
+            
+                "email": extract_email(resume_text),
+            
+                "phone": extract_phone(resume_text),
+            
                 "text": resume_text
+            
             })
 
             with st.expander(f"📄 {resume.name}"):
@@ -156,8 +171,17 @@ if resume_files:
                 )
 
                 ranking_results.append({
-                    "Candidate": candidate["name"],
+
+                    "Candidate": candidate["candidate_name"],
+
+                    "Email": candidate["email"],
+
+                    "Phone": candidate["phone"],
+
+                    "Resume": candidate["filename"],
+
                     "Match Score (%)": similarity
+
                 })
 
             progress.empty()
