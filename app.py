@@ -14,7 +14,7 @@ from utils.ats_score import (
     calculate_ats_score
 )
 from utils.experience import extract_experience
-
+from utils.education import extract_education
 
 
 # -------------------------------------------------
@@ -132,7 +132,8 @@ if resume_files:
         try:
             resume_text = extract_text_from_pdf(resume)
 
-
+            education = extract_education(resume_text)
+            
             resume_data.append({
 
                 "filename": resume.name,
@@ -146,6 +147,8 @@ if resume_files:
                 "skills": extract_skills(resume_text),
 
                 "experience": extract_experience(resume_text),
+
+                "education": education,
 
                 "text": resume_text
 
@@ -215,6 +218,16 @@ if resume_files:
                 ranking_results.append({
 
                     "Candidate": candidate["candidate_name"],
+
+                    "Degree": candidate["education"]["Degree"],
+
+                    "Branch": candidate["education"]["Branch"],
+
+                    "University": candidate["education"]["University"],
+
+                    "Graduation Year": candidate["education"]["Graduation Year"],
+
+                    "CGPA": candidate["education"]["CGPA"],
 
                     "Experience (Years)": candidate["experience"],
 
