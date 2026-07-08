@@ -13,6 +13,7 @@ from utils.ats_score import (
     calculate_skill_match,
     calculate_ats_score
 )
+from utils.experience import extract_experience
 
 
 
@@ -135,17 +136,19 @@ if resume_files:
             resume_data.append({
 
                 "filename": resume.name,
-            
+
                 "candidate_name": extract_name(resume_text),
-            
+
                 "email": extract_email(resume_text),
-            
+
                 "phone": extract_phone(resume_text),
-            
+
                 "skills": extract_skills(resume_text),
-            
+
+                "experience": extract_experience(resume_text),
+
                 "text": resume_text
-            
+
             })
 
             with st.expander(f"📄 {resume.name}"):
@@ -212,6 +215,8 @@ if resume_files:
                 ranking_results.append({
 
                     "Candidate": candidate["candidate_name"],
+
+                    "Experience (Years)": candidate["experience"],
 
                     "ATS Score": ats_score,
                 
