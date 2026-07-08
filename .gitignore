@@ -1,0 +1,30 @@
+# Virtual Environment
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# VS Code
+.vscode/
+
+# Streamlit cache
+.streamlit/
+
+# Environment variables
+.env
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Build files
+build/
+dist/
+
+# Output files (optional)
+output/*.csv
+output/*.xlsx
+output/*.json
