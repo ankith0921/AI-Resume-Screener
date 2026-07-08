@@ -22,43 +22,47 @@ from utils.summary import generate_summary
 # -------------------------------------------------
 st.set_page_config(
     page_title="AI Resume Screening System",
-    page_icon="📄",
+    page_icon="assets/logo.png",
     layout="wide"
 )
 
 # -------------------------------------------------
-# Title
+# Professional Header
 # -------------------------------------------------
-st.title("📄 AI Resume Screening System")
-st.markdown(
-    """
-    Upload a **Job Description** and multiple **Candidate Resumes**.
-    
-    The system will extract the text from each PDF. In the next phase,
-    we will rank candidates using AI based on how well their resumes
-    match the job description.
-    """
+
+col1, col2 = st.columns([1.5, 5.5])
+
+with col1:
+    st.image("assets/logo.png", width=190)
+
+with col2:
+    st.title("AI Resume Screening System")
+    st.caption("AI-Powered Resume Analysis and Candidate Ranking")
+    st.caption(
+    "Analyze resumes, rank candidates using AI, and streamline the hiring process."
 )
 
 st.divider()
 
 # -------------------------------------------------
-# Sidebar
+# Dashboard Metrics
 # -------------------------------------------------
-st.sidebar.header("About")
-st.sidebar.info(
-    """
-    **AI Resume Screening System**
 
-    Features (Coming Soon):
-    - Resume Ranking
-    - AI Similarity Score
-    - Skill Extraction
-    - Missing Skills Analysis
-    - Candidate Summary
-    - CSV Export
-    """
-)
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric("Candidates", 0)
+
+with col2:
+    st.metric("Average ATS", "0%")
+
+with col3:
+    st.metric("Top ATS", "0%")
+
+with col4:
+    st.metric("Avg Experience", "0 Years")
+
+st.divider()
 
 # -------------------------------------------------
 # Upload Section
@@ -66,22 +70,42 @@ st.sidebar.info(
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("📋 Job Description")
-    jd_file = st.file_uploader(
-        "Upload Job Description (PDF)",
-        type=["pdf"],
-        key="jd"
-    )
 
+    with st.container(border=True):
 
+        st.subheader("Job Description")
+
+        st.caption(
+            "Upload a PDF containing the job requirements."
+        )
+
+        jd_file = st.file_uploader(
+            "Choose Job Description",
+            type=["pdf"],
+            key="jd",
+            label_visibility="collapsed"
+        )
+
+        st.caption("Supported format: PDF")
 
 with col2:
-    st.subheader("📑 Candidate Resumes")
-    resume_files = st.file_uploader(
-        "Upload Resume PDFs",
-        type=["pdf"],
-        accept_multiple_files=True
-    )
+
+    with st.container(border=True):
+
+        st.subheader("Candidate Resumes")
+
+        st.caption(
+            "Upload one or more candidate resumes."
+        )
+
+        resume_files = st.file_uploader(
+            "Choose Resume PDFs",
+            type=["pdf"],
+            accept_multiple_files=True,
+            label_visibility="collapsed"
+        )
+
+        st.caption("Supported format: PDF")
 
 st.divider()
 
@@ -95,7 +119,7 @@ if jd_file is not None:
     try:
         jd_text = extract_text_from_pdf(jd_file)
 
-        st.success("✅ Job Description Uploaded Successfully")
+        st.success("Job Description Uploaded Successfully")
 
         with st.expander("View Extracted Job Description", expanded=True):
             st.text_area(
@@ -110,7 +134,7 @@ if jd_file is not None:
             jd_skills = extract_skills(jd_text)
 
             if jd_skills:
-                st.subheader("📌 Required Skills")
+                st.subheader("Required Skills")
                 st.success(" | ".join(jd_skills))
             else:
                 st.warning("No predefined skills detected in the Job Description.")
@@ -125,7 +149,7 @@ resume_data = []
 
 if resume_files:
 
-    st.header("📂 Uploaded Resumes")
+    st.header("Uploaded Resumes")
 
     for resume in resume_files:
 
@@ -154,7 +178,7 @@ if resume_files:
 
             })
 
-            with st.expander(f"📄 {resume.name}"):
+            with st.expander(resume.name):
 
                 st.text_area(
                     "Extracted Resume Text",
@@ -171,7 +195,7 @@ if resume_files:
     # Rank Candidates
     # -------------------------------
     if jd_embedding is not None:
-        with st.spinner("🤖 Ranking candidates..."):
+        with st.spinner("Ranking candidates..."):
 
             ranking_results = []
 
@@ -185,7 +209,7 @@ if resume_files:
                     resume_embedding = generate_embedding(candidate["text"])
                 else:
                     st.warning(
-                        f"⚠️ {candidate['filename']} contains no extractable text."
+                        f"{candidate['filename']} contains no extractable text."
                     )
                     continue
 
@@ -253,7 +277,7 @@ if resume_files:
 
             progress.empty()
 
-            st.header("🏆 Candidate Rankings")
+            st.header("Candidate Rankings")
 
             ranking_df = pd.DataFrame(ranking_results)
 
@@ -271,7 +295,7 @@ if resume_files:
 
             if not ranking_df.empty:
                 st.metric(
-                    "🏆 Top ATS Score",
+                    "Top ATS Score",
                     f"{ranking_df.iloc[0]['ATS Score']}%"
                 )
 
@@ -284,7 +308,7 @@ if resume_files:
 # -------------------------------------------------
 st.divider()
 
-st.header("📊 Upload Summary")
+st.header("Upload Summary")
 
 col1, col2 = st.columns(2)
 
@@ -297,33 +321,3 @@ with col1:
 with col2:
     st.metric("Total Resumes", len(resume_data))
 
-# -------------------------------------------------
-# Next Phase Placeholder
-# -------------------------------------------------
-if jd_text and len(resume_data) > 0:
-
-    st.success("🎉 Everything is ready!")
-
-    st.info(
-        """
-        **Next Phase**
-        
-        We will now:
-        
-        ✅ Generate embeddings
-        
-        ✅ Compare each resume with the Job Description
-        
-        ✅ Calculate similarity scores
-        
-        ✅ Rank candidates
-        
-        ✅ Display Top Candidates
-        """
-    )
-
-else:
-
-    st.warning(
-        "Please upload one Job Description and at least one Resume."
-    )
