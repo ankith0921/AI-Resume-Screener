@@ -8,6 +8,8 @@ from utils.parser import (
     extract_email,
     extract_phone
 )
+from utils.skills import extract_skills
+
 
 # -------------------------------------------------
 # Page Configuration
@@ -82,7 +84,7 @@ st.divider()
 # -------------------------------------------------
 jd_text = ""
 jd_embedding = None
-
+jd_skills = []
 if jd_file is not None:
     try:
         jd_text = extract_text_from_pdf(jd_file)
@@ -99,6 +101,13 @@ if jd_file is not None:
         # Generate embedding
         if jd_text.strip():
             jd_embedding = generate_embedding(jd_text)
+            jd_skills = extract_skills(jd_text)
+
+            if jd_skills:
+                st.subheader("📌 Required Skills")
+                st.success(" | ".join(jd_skills))
+            else:
+                st.warning("No predefined skills detected in the Job Description.")
 
     except Exception as e:
         st.error(f"Error reading Job Description:\n{e}")
@@ -127,6 +136,8 @@ if resume_files:
                 "email": extract_email(resume_text),
             
                 "phone": extract_phone(resume_text),
+            
+                "skills": extract_skills(resume_text),
             
                 "text": resume_text
             
@@ -162,42 +173,50 @@ if resume_files:
                 if candidate["text"].strip():
                     resume_embedding = generate_embedding(candidate["text"])
                 else:
-                    st.warning(f"⚠️ {candidate['name']} contains no extractable text.")
+                    st.warning(
+                        f"⚠️ {candidate['filename']} contains no extractable text."
+                    )
                     continue
 
                 similarity = calculate_similarity(
                     jd_embedding,
                     resume_embedding
                 )
-
+                
+                # Compare resume skills with JD skills
+                matched_skills = list(
+                    set(candidate["skills"]) &
+                    set(jd_skills)
+                )
+                
+                missing_skills = list(
+                    set(jd_skills) -
+                    set(candidate["skills"])
+                )
+                
                 ranking_results.append({
-
                     "Candidate": candidate["candidate_name"],
-
                     "Email": candidate["email"],
-
                     "Phone": candidate["phone"],
-
                     "Resume": candidate["filename"],
-
+                    "Matched Skills": ", ".join(sorted(matched_skills)),
+                    "Missing Skills": ", ".join(sorted(missing_skills)),
                     "Match Score (%)": similarity
-
                 })
 
             progress.empty()
-
-            ranking_results.sort(
-                key=lambda x: x["Match Score (%)"],
-                reverse=True
-            )
 
             st.header("🏆 Candidate Rankings")
 
             ranking_df = pd.DataFrame(ranking_results)
             # Round scores to 2 decimal places
             ranking_df["Match Score (%)"] = ranking_df["Match Score (%)"].round(2)
+            ranking_df = ranking_df.sort_values(
+                by="Match Score (%)",
+                ascending=False
+            ).reset_index(drop=True)
 
-            ranking_df.index = ranking_df.index + 1
+            ranking_df.index += 1
             ranking_df.index.name = "Rank"
 
             st.dataframe(
