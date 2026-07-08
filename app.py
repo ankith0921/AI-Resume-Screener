@@ -147,27 +147,27 @@ if resume_files:
 
             candidate_name = extract_name(resume_text)
             education = extract_education(resume_text)
-            
+
             resume_data.append({
             
                 "filename": resume.name,
-            
+
                 "candidate_name": candidate_name,
-            
+
                 "email": extract_email(resume_text),
-            
+
                 "phone": extract_phone(resume_text),
-            
+
                 "skills": extract_skills(resume_text),
-            
+
                 "experience": extract_experience(resume_text),
-            
+
                 "education": education,
-            
+
                 "text": resume_text
-            
+
             })
-            
+
             with st.expander(
                 f"{candidate_name} ({resume.name})"
             ):
@@ -372,4 +372,3 @@ with col1:
 
 with col2:
     st.metric("Total Resumes", len(resume_data))
-
