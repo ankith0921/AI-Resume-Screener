@@ -19,6 +19,8 @@ from utils.summary import generate_summary
 from utils.recommendation import get_recommendation
 from utils.degree_mapping import DEGREE_MAPPING
 import plotly.express as px
+from utils.feedback import generate_feedback
+from utils.report_generator import generate_pdf_report
 
 # -------------------------------------------------
 # Page Configuration
@@ -661,6 +663,58 @@ if resume_files:
             **Decision:** Not Recommended
             """
                 )
+
+            st.divider()
+
+            st.subheader("AI Resume Feedback")
+
+            strengths, improvements, overall = generate_feedback(candidate)
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+            
+                st.markdown("Strengths")
+
+                if strengths:
+                    for item in strengths:
+                        st.success(item)
+                else:
+                    st.info("No strengths identified.")
+
+            with col2:
+            
+                st.markdown("Areas for Improvement")
+
+                if improvements:
+                    for item in improvements:
+                        st.warning(item)
+                else:
+                    st.success("No major improvements required.")
+
+            st.markdown("Overall Assessment")
+            st.info(overall)
+
+            st.divider()
+
+            if st.button("Download Candidate Report"):
+            
+                filename = "Candidate_Report.pdf"
+
+                generate_pdf_report(
+                    candidate,
+                    filename
+                )
+
+                with open(filename, "rb") as pdf_file:
+                
+                    st.download_button(
+                        label="⬇️ Download PDF",
+                        data=pdf_file,
+                        file_name=filename,
+                        mime="application/pdf"
+                    )
+
 # -------------------------------------------------
 # Summary
 # -------------------------------------------------
