@@ -250,7 +250,7 @@ if resume_files:
 
                     "Branch": candidate["education"]["Branch"],
 
-                    "University": candidate["education"]["University"],
+                    "University/College": candidate["education"]["University"],
 
                     "Graduation Year": candidate["education"]["Graduation Year"],
 
@@ -410,7 +410,7 @@ if resume_files:
             ]
 
             st.dataframe(
-                display_df,
+                table_df,
                 use_container_width=True
             )
 
@@ -569,7 +569,7 @@ if resume_files:
 
                 st.write(f"**Degree:** {candidate['Degree']}")
                 st.write(f"**Branch:** {candidate['Branch']}")
-                st.write(f"**University:** {candidate['University']}")
+                st.write(f"**University/College:** {candidate['University/College']}")
                 st.write(f"**Graduation Year:** {candidate['Graduation Year']}")
                 st.write(f"**CGPA:** {candidate['CGPA']}")
 
