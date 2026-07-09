@@ -398,7 +398,7 @@ if resume_files:
                     display_df["Experience (Years)"] >= experience_filter
                 ]
 
-            display_df = display_df[
+            table_df = display_df[
                 [
                     "Candidate",
                     "ATS Score",
@@ -418,17 +418,114 @@ if resume_files:
 
             st.subheader("Recruitment Analytics")
 
-            fig = px.histogram(
-                display_df,
-                x="ATS Score",
-                nbins=8,
-                title="Distribution of Candidate ATS Scores"
-            )
-            
-            st.plotly_chart(
-                fig,
-                use_container_width=True
-            )
+            col1, col2 = st.columns(2)
+
+            with col1:
+
+                fig = px.histogram(
+                    display_df,
+                    x="ATS Score",
+                    nbins=8,
+                    title="ATS Score Distribution"
+                )
+
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True
+                )
+            with col2:
+
+                degree_counts = (
+                    display_df["Degree"]
+                    .value_counts()
+                    .reset_index()
+                )
+
+                degree_counts.columns = [
+                    "Degree",
+                    "Candidates"
+                ]
+
+                fig = px.pie(
+                    degree_counts,
+                    names="Degree",
+                    values="Candidates",
+                    title="Degree Distribution"
+                )
+
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True
+                )
+
+            col3, col4 = st.columns(2)
+
+            with col3:
+
+                experience_df = display_df.copy()
+
+                experience_df["Experience (Years)"] = (
+                    pd.to_numeric(
+                        experience_df["Experience (Years)"],
+                        errors="coerce"
+                    )
+                    .fillna(0)
+                )
+
+                fig = px.histogram(
+                    experience_df,
+                    x="Experience (Years)",
+                    nbins=8,
+                    title="Experience Distribution"
+                )
+
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True
+                )
+
+            with col4:
+
+                all_skills = []
+
+                for skills in display_df["Matched Skills"]:
+                
+                    if skills != "None":
+                    
+                        all_skills.extend(
+                            [skill.strip() for skill in skills.split(",")]
+                        )
+
+                if all_skills:
+                
+                    skills_df = (
+                        pd.Series(all_skills)
+                        .value_counts()
+                        .head(10)
+                        .reset_index()
+                    )
+
+                    skills_df.columns = [
+                        "Skill",
+                        "Count"
+                    ]
+
+                    fig = px.bar(
+                        skills_df,
+                        x="Count",
+                        y="Skill",
+                        orientation="h",
+                        title="Top Matched Skills"
+                    )
+
+                    st.plotly_chart(
+                        fig,
+                        use_container_width=True
+                    )
+
+                else:
+                
+                    st.info("No matched skills available.")
 
             csv = display_df.to_csv(index=False).encode("utf-8")
 
