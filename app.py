@@ -18,6 +18,7 @@ from utils.education import extract_education
 from utils.summary import generate_summary
 from utils.recommendation import get_recommendation
 from utils.degree_mapping import DEGREE_MAPPING
+import plotly.express as px
 
 # -------------------------------------------------
 # Page Configuration
@@ -331,13 +332,13 @@ if resume_files:
             st.header("Candidate Ranking Results")
 
             filter1, filter2, filter3, filter4 = st.columns(4)
-            
+
             with filter1:
                 search_candidate = st.text_input(
                     "Search Candidate",
                     placeholder="Enter candidate name..."
                 )
-            
+
             with filter2:
                 minimum_ats = st.slider(
                     "Minimum ATS Score",
@@ -345,13 +346,13 @@ if resume_files:
                     max_value=100,
                     value=0
                 )
-            
+
             with filter3:
                 degree_filter = st.selectbox(
                     "Degree",
                     ["All"] + list(DEGREE_MAPPING.keys())
                 )
-            
+
             with filter4:
                 experience_filter = st.selectbox(
                     "Minimum Experience",
@@ -413,6 +414,22 @@ if resume_files:
                 use_container_width=True
             )
 
+            st.divider()
+
+            st.subheader("Recruitment Analytics")
+
+            fig = px.histogram(
+                display_df,
+                x="ATS Score",
+                nbins=8,
+                title="Distribution of Candidate ATS Scores"
+            )
+            
+            st.plotly_chart(
+                fig,
+                use_container_width=True
+            )
+
             csv = display_df.to_csv(index=False).encode("utf-8")
 
             st.download_button(
@@ -424,11 +441,11 @@ if resume_files:
 
             st.divider()
 
-            st.header("Candidate Profile")
+            st.header("Candidate Details")
 
             selected_candidate = st.selectbox(
                 "Select Candidate",
-                ranking_df["Candidate"]
+                display_df["Candidate"]
             )
 
             candidate = ranking_df[
