@@ -31,12 +31,12 @@ cell_style = ParagraphStyle(
     "Cell",
     parent=styles["BodyText"],
     fontName="Helvetica",
-    fontSize=9,
-    leading=12,
+    fontSize=8,
+    leading=11,
     alignment=TA_LEFT
 )
 
-# Common table style with blue colors
+# Common table style with light blue colors
 table_style = TableStyle([
     ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#EDF4FF")),
     ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#8FA8C9")),
@@ -76,28 +76,30 @@ def generate_pdf_report(candidate, filename):
 
     # Professional header with logo and title
     logo = Image("assets/logo.png")
-    logo.drawHeight = 100
-    logo.drawWidth = 100
+    logo.drawHeight = 90
+    logo.drawWidth = 90
 
     header_table = Table(
         [
             [
                 logo,
                 Paragraph(
-                    "<font size=24><b>AI Resume Screening Report</b></font><br/>"
+                    "<font size=24 color='#1E3A8A'><b>AI Resume Screening Report</b></font><br/>"
                     f"<font size=10><b>Generated On:</b> "
                     f"{datetime.now().strftime('%d %B %Y, %I:%M %p')}</font>",
                     styles["Normal"]
                 )
             ]
         ],
-        colWidths=[90, 380]
+        colWidths=[110, 360]
     )
 
     header_table.setStyle(
         TableStyle([
             ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 15)
+            ("LEFTPADDING", (0, 0), (-1, -1), 0),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
         ])
     )
 
@@ -119,6 +121,53 @@ def generate_pdf_report(candidate, filename):
     story.append(divider_line)
     story.append(Paragraph("<br/>", styles["Normal"]))
 
+    # Generate dynamic recommendation
+    ats = candidate["ATS Score"]
+
+    if ats >= 75:
+        rec_status = "Recommended"
+        rec_color = "#22C55E"   # Green
+        rec_reason = (
+            "Strong ATS score with good alignment to the job requirements."
+        )
+    
+    elif ats >= 55:
+        rec_status = "Consider"
+        rec_color = "#EAB308"   # Yellow
+        rec_reason = (
+            "Moderate ATS score. Further manual review is recommended."
+        )
+    
+    else:
+        rec_status = "Not Recommended"
+        rec_color = "#EF4444"   # Red
+        rec_reason = (
+            "Low ATS score with significant skill or experience gaps."
+        )
+
+    # Status badge with recommendation label
+    story.append(Paragraph("<b>Recommendation</b>", heading_style))
+    
+    status_badge = Table(
+        [[Paragraph(f"<b>{rec_status}</b>", cell_style)]],
+        colWidths=[450]
+    )
+    status_badge.setStyle(
+        TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(rec_color)),
+            ("TEXTCOLOR", (0, 0), (-1, -1), colors.whitesmoke),
+            ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, -1), 14),
+            ("ALIGNMENT", (0, 0), (-1, -1), "CENTER"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 10),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ])
+    )
+    story.append(status_badge)
+    story.append(Paragraph("<br/>", styles["Normal"]))
+
     # Candidate Information
     candidate_table = Table(
         [
@@ -126,7 +175,7 @@ def generate_pdf_report(candidate, filename):
             [Paragraph("<b>Email</b>", cell_style), Paragraph(candidate["Email"], cell_style)],
             [Paragraph("<b>Phone</b>", cell_style), Paragraph(candidate["Phone"], cell_style)]
         ],
-        colWidths=[140, 330]
+        colWidths=[130, 340]
     )
     candidate_table.setStyle(table_style)
     story.append(
@@ -146,7 +195,7 @@ def generate_pdf_report(candidate, filename):
             [Paragraph("<b>Graduation Year</b>", cell_style), Paragraph(candidate["Graduation Year"], cell_style)],
             [Paragraph("<b>CGPA</b>", cell_style), Paragraph(candidate["CGPA"], cell_style)]
         ],
-        colWidths=[140, 330]
+        colWidths=[130, 340]
     )
     education_table.setStyle(table_style)
     story.append(
@@ -165,7 +214,7 @@ def generate_pdf_report(candidate, filename):
             [Paragraph("<b>Skill Match</b>", cell_style), Paragraph(f"{candidate['Skill Match (%)']:.2f}%", cell_style)],
             [Paragraph("<b>Experience</b>", cell_style), Paragraph(f"{candidate['Experience (Years)']} Years", cell_style)]
         ],
-        colWidths=[140, 330]
+        colWidths=[130, 340]
     )
     performance_table.setStyle(table_style)
     story.append(
@@ -176,13 +225,27 @@ def generate_pdf_report(candidate, filename):
     )
     story.append(Paragraph("<br/>", styles["Normal"]))
 
-    # Skills Analysis
+    # Skills Analysis with bullet points
+    matched_skills = candidate["Matched Skills"]
+    if matched_skills != "None":
+        matched_list = matched_skills.split(", ")
+        matched_text = "<br/>".join(f"• {skill}" for skill in matched_list)
+    else:
+        matched_text = "None"
+
+    missing_skills = candidate["Missing Skills"]
+    if missing_skills != "None":
+        missing_list = missing_skills.split(", ")
+        missing_text = "<br/>".join(f"• {skill}" for skill in missing_list)
+    else:
+        missing_text = "None"
+
     skills_table = Table(
         [
-            [Paragraph("<b>Matched Skills</b>", cell_style), Paragraph(candidate["Matched Skills"], cell_style)],
-            [Paragraph("<b>Missing Skills</b>", cell_style), Paragraph(candidate["Missing Skills"], cell_style)]
+            [Paragraph("<b>Matched Skills</b>", cell_style), Paragraph(matched_text, cell_style)],
+            [Paragraph("<b>Missing Skills</b>", cell_style), Paragraph(missing_text, cell_style)]
         ],
-        colWidths=[140, 330]
+        colWidths=[130, 340]
     )
     skills_table.setStyle(table_style)
     story.append(
@@ -219,24 +282,15 @@ def generate_pdf_report(candidate, filename):
     )
     story.append(Paragraph("<br/>", styles["Normal"]))
 
-    # Hiring Recommendation
+    # Hiring Recommendation with dynamic content
     recommendation_table = Table(
         [
-            [Paragraph("Recommendation generated in the application based on ATS Score.", cell_style)]
+            [Paragraph("<b>Recommendation:</b>", cell_style), Paragraph(f"<b>{rec_status}</b>", cell_style)],
+            [Paragraph("<b>Reason:</b>", cell_style), Paragraph(rec_reason, cell_style)]
         ],
-        colWidths=[450]
+        colWidths=[130, 340]
     )
-    recommendation_table.setStyle(
-        TableStyle([
-            ("BOX", (0, 0), (-1, -1), 0.7, colors.HexColor("#8FA8C9")),
-            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F8FAFD")),
-            ("LEFTPADDING", (0, 0), (-1, -1), 10),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-            ("TOPPADDING", (0, 0), (-1, -1), 10),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-            ("VALIGN", (0, 0), (-1, -1), "TOP")
-        ])
-    )
+    recommendation_table.setStyle(table_style)
     story.append(
         KeepTogether([
             Paragraph("<b>Hiring Recommendation</b>", heading_style),
