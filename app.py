@@ -298,6 +298,11 @@ if resume_files:
                 ascending=False
             ).reset_index(drop=True)
 
+            def get_candidate(name):
+                return ranking_df[
+                    ranking_df["Candidate"] == name
+                ].iloc[0]
+
             # Dashboard Statistics
 
             candidate_count = len(ranking_df)
@@ -330,194 +335,143 @@ if resume_files:
                 st.metric("Avg Experience", f"{average_experience:.1f} Years")
 
             st.divider()
-
-            st.header("Candidate Ranking Results")
-
-            filter1, filter2, filter3, filter4 = st.columns(4)
-
-            with filter1:
-                search_candidate = st.text_input(
-                    "Search Candidate",
-                    placeholder="Enter candidate name..."
-                )
-
-            with filter2:
-                minimum_ats = st.slider(
-                    "Minimum ATS Score",
-                    min_value=0,
-                    max_value=100,
-                    value=0
-                )
-
-            with filter3:
-                degree_filter = st.selectbox(
-                    "Degree",
-                    ["All"] + list(DEGREE_MAPPING.keys())
-                )
-
-            with filter4:
-                experience_filter = st.selectbox(
-                    "Minimum Experience",
-                    ["All", 0, 1, 2, 3, 5, 7, 10]
-                )
-
-            ranking_df.index += 1
-            ranking_df.index.name = "Rank"
-
-            display_df = ranking_df.copy()
-
-            if search_candidate:
-            
-                display_df = display_df[
-                    display_df["Candidate"].str.contains(
-                        search_candidate,
-                        case=False,
-                        na=False
-                    )
-                ]
-
-            display_df = display_df[
-                display_df["ATS Score"] >= minimum_ats
-            ]
-
-            if degree_filter != "All":
-
-                aliases = DEGREE_MAPPING[degree_filter]
-
-                pattern = "|".join(aliases)
-
-                display_df = display_df[
-                    display_df["Degree"].str.contains(
-                        pattern,
-                        case=False,
-                        na=False
-                    )
-                ]
-
-            if experience_filter != "All":
-
-                display_df = display_df[
-                    display_df["Experience (Years)"] >= experience_filter
-                ]
-
-            table_df = display_df[
-                [
-                    "Candidate",
-                    "ATS Score",
-                    "Semantic Score",
-                    "Skill Match (%)",
-                    "Experience (Years)",
-                    "Degree"
-                ]
-            ]
-
-            st.dataframe(
-                table_df,
-                use_container_width=True
+            st.subheader("Navigation")
+            page = st.segmented_control(
+                label="Navigation",
+                options=[
+                    "Dashboard",
+                    "Candidates",
+                    "Comparison",
+                    "Reports"
+                ],
+                default="Dashboard",
+                label_visibility="collapsed"
             )
 
-            st.divider()
+            if page == "Dashboard":
+            
+                st.header("Candidate Ranking Results")
 
-            st.subheader("Recruitment Analytics")
+                filter1, filter2, filter3, filter4 = st.columns(4)
 
-            col1, col2 = st.columns(2)
+                with filter1:
+                    search_candidate = st.text_input(
+                        "Search Candidate",
+                        placeholder="Enter candidate name..."
+                    )
 
-            with col1:
+                with filter2:
+                    minimum_ats = st.slider(
+                        "Minimum ATS Score",
+                        min_value=0,
+                        max_value=100,
+                        value=0
+                    )
 
-                fig = px.histogram(
-                    display_df,
-                    x="ATS Score",
-                    nbins=8,
-                    title="ATS Score Distribution"
-                )
+                with filter3:
+                    degree_filter = st.selectbox(
+                        "Degree",
+                        ["All"] + list(DEGREE_MAPPING.keys())
+                    )
 
-                st.plotly_chart(
-                    fig,
-                    use_container_width=True
-                )
-            with col2:
+                with filter4:
+                    experience_filter = st.selectbox(
+                        "Minimum Experience",
+                        ["All", 0, 1, 2, 3, 5, 7, 10]
+                    )
 
-                degree_counts = (
-                    display_df["Degree"]
-                    .value_counts()
-                    .reset_index()
-                )
+                ranking_df.index += 1
+                ranking_df.index.name = "Rank"
 
-                degree_counts.columns = [
-                    "Degree",
-                    "Candidates"
+                display_df = ranking_df.copy()
+
+                if search_candidate:
+                
+                    display_df = display_df[
+                        display_df["Candidate"].str.contains(
+                            search_candidate,
+                            case=False,
+                            na=False
+                        )
+                    ]
+
+                display_df = display_df[
+                    display_df["ATS Score"] >= minimum_ats
                 ]
 
-                fig = px.pie(
-                    degree_counts,
-                    names="Degree",
-                    values="Candidates",
-                    title="Degree Distribution"
-                )
+                if degree_filter != "All":
 
-                st.plotly_chart(
-                    fig,
-                    use_container_width=True
-                )
+                    aliases = DEGREE_MAPPING[degree_filter]
 
-            col3, col4 = st.columns(2)
+                    pattern = "|".join(aliases)
 
-            with col3:
-
-                experience_df = display_df.copy()
-
-                experience_df["Experience (Years)"] = (
-                    pd.to_numeric(
-                        experience_df["Experience (Years)"],
-                        errors="coerce"
-                    )
-                    .fillna(0)
-                )
-
-                fig = px.histogram(
-                    experience_df,
-                    x="Experience (Years)",
-                    nbins=8,
-                    title="Experience Distribution"
-                )
-
-                st.plotly_chart(
-                    fig,
-                    use_container_width=True
-                )
-
-            with col4:
-
-                all_skills = []
-
-                for skills in display_df["Matched Skills"]:
-                
-                    if skills != "None":
-                    
-                        all_skills.extend(
-                            [skill.strip() for skill in skills.split(",")]
+                    display_df = display_df[
+                        display_df["Degree"].str.contains(
+                            pattern,
+                            case=False,
+                            na=False
                         )
+                    ]
 
-                if all_skills:
-                
-                    skills_df = (
-                        pd.Series(all_skills)
+                if experience_filter != "All":
+
+                    display_df = display_df[
+                        display_df["Experience (Years)"] >= experience_filter
+                    ]
+
+                table_df = display_df[
+                    [
+                        "Candidate",
+                        "ATS Score",
+                        "Semantic Score",
+                        "Skill Match (%)",
+                        "Experience (Years)",
+                        "Degree"
+                    ]
+                ]
+
+                st.dataframe(
+                    table_df,
+                    use_container_width=True
+                )
+
+                st.divider()
+
+                st.subheader("Recruitment Analytics")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+
+                    fig = px.histogram(
+                        display_df,
+                        x="ATS Score",
+                        nbins=8,
+                        title="ATS Score Distribution"
+                    )
+
+                    st.plotly_chart(
+                        fig,
+                        use_container_width=True
+                    )
+                with col2:
+
+                    degree_counts = (
+                        display_df["Degree"]
                         .value_counts()
-                        .head(10)
                         .reset_index()
                     )
 
-                    skills_df.columns = [
-                        "Skill",
-                        "Count"
+                    degree_counts.columns = [
+                        "Degree",
+                        "Candidates"
                     ]
 
-                    fig = px.bar(
-                        skills_df,
-                        x="Count",
-                        y="Skill",
-                        orientation="h",
-                        title="Top Matched Skills"
+                    fig = px.pie(
+                        degree_counts,
+                        names="Degree",
+                        values="Candidates",
+                        title="Degree Distribution"
                     )
 
                     st.plotly_chart(
@@ -525,303 +479,377 @@ if resume_files:
                         use_container_width=True
                     )
 
-                else:
-                
-                    st.info("No matched skills available.")
+                col3, col4 = st.columns(2)
 
-            csv = display_df.to_csv(index=False).encode("utf-8")
+                with col3:
 
-            st.download_button(
-                label="Download Ranking Report",
-                data=csv,
-                file_name="candidate_ranking.csv",
-                mime="text/csv"
-            )
+                    experience_df = display_df.copy()
 
-            st.divider()
+                    experience_df["Experience (Years)"] = (
+                        pd.to_numeric(
+                            experience_df["Experience (Years)"],
+                            errors="coerce"
+                        )
+                        .fillna(0)
+                    )
 
-            st.header("Candidate Details")
+                    fig = px.histogram(
+                        experience_df,
+                        x="Experience (Years)",
+                        nbins=8,
+                        title="Experience Distribution"
+                    )
 
-            selected_candidate = st.selectbox(
-                "Select Candidate",
-                display_df["Candidate"]
-            )
+                    st.plotly_chart(
+                        fig,
+                        use_container_width=True
+                    )
 
-            candidate = ranking_df[
-                ranking_df["Candidate"] == selected_candidate
-            ].iloc[0]
+                with col4:
 
-            st.divider()
+                    all_skills = []
 
-            col1, col2 = st.columns(2)
+                    for skills in display_df["Matched Skills"]:
+                    
+                        if skills != "None":
+                        
+                            all_skills.extend(
+                                [skill.strip() for skill in skills.split(",")]
+                            )
 
-            with col1:
-            
-                st.subheader("Personal Information")
+                    if all_skills:
+                    
+                        skills_df = (
+                            pd.Series(all_skills)
+                            .value_counts()
+                            .head(10)
+                            .reset_index()
+                        )
 
-                st.write(f"**Name:** {candidate['Candidate']}")
-                st.write(f"**Email:** {candidate['Email']}")
-                st.write(f"**Phone:** {candidate['Phone']}")
+                        skills_df.columns = [
+                            "Skill",
+                            "Count"
+                        ]
 
-                st.write(f"**Experience:** {candidate['Experience (Years)']}")
+                        fig = px.bar(
+                            skills_df,
+                            x="Count",
+                            y="Skill",
+                            orientation="h",
+                            title="Top Matched Skills"
+                        )
 
-            with col2:
-            
-                st.subheader("Education")
+                        st.plotly_chart(
+                            fig,
+                            use_container_width=True
+                        )
 
-                st.write(f"**Degree:** {candidate['Degree']}")
-                st.write(f"**Branch:** {candidate['Branch']}")
-                st.write(f"**University/College:** {candidate['University/College']}")
-                st.write(f"**Graduation Year:** {candidate['Graduation Year']}")
-                st.write(f"**CGPA:** {candidate['CGPA']}")
+                    else:
+                    
+                        st.info("No matched skills available.")
 
-            st.divider()
-            
+                csv = display_df.to_csv(index=False).encode("utf-8")
 
-            st.subheader("Candidate Performance")
-
-            st.write(f"**ATS Score:** {candidate['ATS Score']}%")
-            st.progress(int(candidate["ATS Score"]))
-
-            st.write(f"**Semantic Score:** {candidate['Semantic Score']}%")
-            st.progress(int(candidate["Semantic Score"]))
-
-            st.write(f"**Skill Match:** {candidate['Skill Match (%)']}%")
-            st.progress(int(candidate["Skill Match (%)"]))
-            col1, col2 = st.columns(2)
-
-            with col1:
-                
-                    st.subheader("Matched Skills")
-
-                    st.success(candidate["Matched Skills"])
-
-            with col2:
-                
-                st.subheader("Missing Skills")
-
-                st.warning(candidate["Missing Skills"])
-
-            st.divider()
-
-            st.subheader("AI Candidate Summary")
-
-            st.info(candidate["Summary"])
-
-            st.divider()
-
-            recommendation, message = get_recommendation(
-                candidate["ATS Score"]
-            )
-
-            st.subheader("Hiring Recommendation")
-
-            if recommendation == "Strong Match":
-
-                st.success(
-                    f"""
-            ### Strong Match
-
-            **Recommendation:** {message}
-
-            **Decision:** Proceed with Interview
-            """
-                )
-
-            elif recommendation == "Good Match":
-            
-                st.info(
-                    f"""
-            ### Good Match
-
-            **Recommendation:** {message}
-
-            **Decision:** Shortlist Candidate
-            """
-                )
-
-            elif recommendation == "Average Match":
-            
-                st.warning(
-                    f"""
-            ### Average Match
-
-            **Recommendation:** {message}
-
-            **Decision:** Manual Review Required
-            """
-                )
-
-            else:
-            
-                st.error(
-                    f"""
-            ### Weak Match
-
-            **Recommendation:** {message}
-
-            **Decision:** Not Recommended
-            """
-                )
-
-            st.divider()
-
-            st.subheader("AI Resume Feedback")
-
-            strengths, improvements, overall = generate_feedback(candidate)
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-            
-                st.markdown("Strengths")
-
-                if strengths:
-                    for item in strengths:
-                        st.success(item)
-                else:
-                    st.info("No strengths identified.")
-
-            with col2:
-            
-                st.markdown("Areas for Improvement")
-
-                if improvements:
-                    for item in improvements:
-                        st.warning(item)
-                else:
-                    st.success("No major improvements required.")
-
-            st.markdown("Overall Assessment")
-            st.info(overall)
-
-            st.divider()
-
-            filename = "Candidate_Report.pdf"
-
-            generate_pdf_report(
-                candidate,
-                filename
-            )
-
-            with open(filename, "rb") as pdf_file:
-            
                 st.download_button(
-                    label=":material/download: Download Candidate Report",
-                    data=pdf_file,
-                    file_name=filename,
-                    mime="application/pdf",
-                    use_container_width=True
+                    label="Download Ranking Report",
+                    data=csv,
+                    file_name="candidate_ranking.csv",
+                    mime="text/csv"
                 )
 
-            st.header("Candidate Comparison")
+                st.divider()
 
-            if len(ranking_df) > 1:
-            
-                comparison_col1, comparison_col2 = st.columns(2)
-            
-                with comparison_col1:
-                    candidate1_name = st.selectbox(
-                        "Candidate 1",
-                        ranking_df["Candidate"],
-                        key="candidate1"
+                st.header("Analysis Summary")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    if jd_file:
+                        st.metric("Job Description", "Uploaded")
+                    else:
+                        st.metric("Job Description", "Not Uploaded")
+
+                with col2:
+                    st.metric("Total Resumes", len(resume_data))
+
+            elif page == "Candidates":
+
+                st.header("Candidate Details")
+
+                selected_candidate = st.selectbox(
+                    "Select Candidate",
+                    ranking_df["Candidate"],
+                    key="candidate_details"
+                )
+
+                candidate = get_candidate(selected_candidate)
+
+                st.divider()
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                
+                    st.subheader("Personal Information")
+
+                    st.write(f"**Name:** {candidate['Candidate']}")
+                    st.write(f"**Email:** {candidate['Email']}")
+                    st.write(f"**Phone:** {candidate['Phone']}")
+
+                    st.write(f"**Experience:** {candidate['Experience (Years)']}")
+
+                with col2:
+                
+                    st.subheader("Education")
+
+                    st.write(f"**Degree:** {candidate['Degree']}")
+                    st.write(f"**Branch:** {candidate['Branch']}")
+                    st.write(f"**University/College:** {candidate['University/College']}")
+                    st.write(f"**Graduation Year:** {candidate['Graduation Year']}")
+                    st.write(f"**CGPA:** {candidate['CGPA']}")
+
+                st.divider()
+                
+
+                st.subheader("Candidate Performance")
+
+                st.write(f"**ATS Score:** {candidate['ATS Score']}%")
+                st.progress(int(candidate["ATS Score"]))
+
+                st.write(f"**Semantic Score:** {candidate['Semantic Score']}%")
+                st.progress(int(candidate["Semantic Score"]))
+
+                st.write(f"**Skill Match:** {candidate['Skill Match (%)']}%")
+                st.progress(int(candidate["Skill Match (%)"]))
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    
+                        st.subheader("Matched Skills")
+
+                        st.success(candidate["Matched Skills"])
+
+                with col2:
+                    
+                    st.subheader("Missing Skills")
+
+                    st.warning(candidate["Missing Skills"])
+
+                st.divider()
+
+                st.subheader("AI Candidate Summary")
+
+                st.info(candidate["Summary"])
+
+                st.divider()
+
+                recommendation, message = get_recommendation(
+                    candidate["ATS Score"]
+                )
+
+                st.subheader("Hiring Recommendation")
+
+                if recommendation == "Strong Match":
+
+                    st.success(
+                        f"""
+                ### Strong Match
+
+                **Recommendation:** {message}
+
+                **Decision:** Proceed with Interview
+                """
                     )
-            
-                with comparison_col2:
-                    candidate2_name = st.selectbox(
-                        "Candidate 2",
-                        ranking_df["Candidate"],
-                        index=1,
-                        key="candidate2"
+
+                elif recommendation == "Good Match":
+                
+                    st.info(
+                        f"""
+                ### Good Match
+
+                **Recommendation:** {message}
+
+                **Decision:** Shortlist Candidate
+                """
                     )
-            
-                candidate1 = ranking_df[
-                    ranking_df["Candidate"] == candidate1_name
-                ].iloc[0]
-            
-                candidate2 = ranking_df[
-                    ranking_df["Candidate"] == candidate2_name
-                ].iloc[0]
-            
-                st.subheader("Comparison Summary")
-            
-                ats_winner = (
-                    candidate1_name
-                    if candidate1["ATS Score"] >= candidate2["ATS Score"]
-                    else candidate2_name
-                )
-            
-                exp_winner = (
-                    candidate1_name
-                    if candidate1["Experience (Years)"] >= candidate2["Experience (Years)"]
-                    else candidate2_name
-                )
-            
-                skill_winner = (
-                    candidate1_name
-                    if candidate1["Skill Match (%)"] >= candidate2["Skill Match (%)"]
-                    else candidate2_name
-                )
-            
-                st.success(f"Higher ATS Score: {ats_winner}")
-                st.success(f"More Experience: {exp_winner}")
-                st.success(f"Better Skill Match: {skill_winner}")
-            
-                comparison_df = pd.DataFrame({
-                    "Attribute": [
-                        "ATS Score",
-                        "Semantic Score",
-                        "Skill Match",
-                        "Experience",
-                        "Degree",
-                        "Branch",
-                        "Matched Skills",
-                        "Missing Skills"
-                    ],
-                    candidate1_name: [
-                        f"{candidate1['ATS Score']}%",
-                        f"{candidate1['Semantic Score']}%",
-                        f"{candidate1['Skill Match (%)']}%",
-                        f"{candidate1['Experience (Years)']} Years",
-                        candidate1["Degree"],
-                        candidate1["Branch"],
-                        candidate1["Matched Skills"],
-                        candidate1["Missing Skills"]
-                    ],
-                    candidate2_name: [
-                        f"{candidate2['ATS Score']}%",
-                        f"{candidate2['Semantic Score']}%",
-                        f"{candidate2['Skill Match (%)']}%",
-                        f"{candidate2['Experience (Years)']} Years",
-                        candidate2["Degree"],
-                        candidate2["Branch"],
-                        candidate2["Matched Skills"],
-                        candidate2["Missing Skills"]
-                    ]
-                })
-            
-                st.dataframe(
-                    comparison_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
-            
-            else:
-                st.info("Upload at least two resumes to compare candidates.")
-# -------------------------------------------------
-# Summary
-# -------------------------------------------------
-st.divider()
 
-st.header("Analysis Summary")
+                elif recommendation == "Average Match":
+                
+                    st.warning(
+                        f"""
+                ### Average Match
 
-col1, col2 = st.columns(2)
+                **Recommendation:** {message}
 
-with col1:
-    if jd_file:
-        st.metric("Job Description", "Uploaded")
-    else:
-        st.metric("Job Description", "Not Uploaded")
+                **Decision:** Manual Review Required
+                """
+                    )
 
-with col2:
-    st.metric("Total Resumes", len(resume_data))
+                else:
+                
+                    st.error(
+                        f"""
+                ### Weak Match
+
+                **Recommendation:** {message}
+
+                **Decision:** Not Recommended
+                """
+                    )
+
+                st.divider()
+
+                st.subheader("AI Resume Feedback")
+
+                strengths, improvements, overall = generate_feedback(candidate)
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                
+                    st.markdown("Strengths")
+
+                    if strengths:
+                        for item in strengths:
+                            st.success(item)
+                    else:
+                        st.info("No strengths identified.")
+
+                with col2:
+                
+                    st.markdown("Areas for Improvement")
+
+                    if improvements:
+                        for item in improvements:
+                            st.warning(item)
+                    else:
+                        st.success("No major improvements required.")
+
+                st.markdown("Overall Assessment")
+                st.info(overall)
+            
+            elif page == "Reports":
+            
+                st.header("Reports")
+
+                selected_candidate = st.selectbox(
+                    "Select Candidate",
+                    ranking_df["Candidate"],
+                    key="report_candidate"
+                )
+
+                candidate = get_candidate(selected_candidate)
+
+                filename = "Candidate_Report.pdf"
+
+                generate_pdf_report(
+                    candidate,
+                    filename
+                )
+
+                with open(filename, "rb") as pdf_file:
+                
+                    st.download_button(
+                        label=":material/download: Download Candidate Report",
+                        data=pdf_file,
+                        file_name=filename,
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+
+            elif page == "Comparison":
+
+                st.header("Candidate Comparison")
+
+                if len(ranking_df) > 1:
+                
+                    comparison_col1, comparison_col2 = st.columns(2)
+                
+                    with comparison_col1:
+                        candidate1_name = st.selectbox(
+                            "Candidate 1",
+                            ranking_df["Candidate"],
+                            key="candidate1"
+                        )
+                
+                    with comparison_col2:
+                        candidate2_name = st.selectbox(
+                            "Candidate 2",
+                            ranking_df["Candidate"],
+                            index=1,
+                            key="candidate2"
+                        )
+                
+                    candidate1 = ranking_df[
+                        ranking_df["Candidate"] == candidate1_name
+                    ].iloc[0]
+                
+                    candidate2 = ranking_df[
+                        ranking_df["Candidate"] == candidate2_name
+                    ].iloc[0]
+                
+                    st.subheader("Comparison Summary")
+                
+                    ats_winner = (
+                        candidate1_name
+                        if candidate1["ATS Score"] >= candidate2["ATS Score"]
+                        else candidate2_name
+                    )
+                
+                    exp_winner = (
+                        candidate1_name
+                        if candidate1["Experience (Years)"] >= candidate2["Experience (Years)"]
+                        else candidate2_name
+                    )
+                
+                    skill_winner = (
+                        candidate1_name
+                        if candidate1["Skill Match (%)"] >= candidate2["Skill Match (%)"]
+                        else candidate2_name
+                    )
+                
+                    st.success(f"Higher ATS Score: {ats_winner}")
+                    st.success(f"More Experience: {exp_winner}")
+                    st.success(f"Better Skill Match: {skill_winner}")
+                
+                    comparison_df = pd.DataFrame({
+                        "Attribute": [
+                            "ATS Score",
+                            "Semantic Score",
+                            "Skill Match",
+                            "Experience",
+                            "Degree",
+                            "Branch",
+                            "Matched Skills",
+                            "Missing Skills"
+                        ],
+                        candidate1_name: [
+                            f"{candidate1['ATS Score']}%",
+                            f"{candidate1['Semantic Score']}%",
+                            f"{candidate1['Skill Match (%)']}%",
+                            f"{candidate1['Experience (Years)']} Years",
+                            candidate1["Degree"],
+                            candidate1["Branch"],
+                            candidate1["Matched Skills"],
+                            candidate1["Missing Skills"]
+                        ],
+                        candidate2_name: [
+                            f"{candidate2['ATS Score']}%",
+                            f"{candidate2['Semantic Score']}%",
+                            f"{candidate2['Skill Match (%)']}%",
+                            f"{candidate2['Experience (Years)']} Years",
+                            candidate2["Degree"],
+                            candidate2["Branch"],
+                            candidate2["Matched Skills"],
+                            candidate2["Missing Skills"]
+                        ]
+                    })
+                
+                    st.dataframe(
+                        comparison_df,
+                        use_container_width=True,
+                        hide_index=True
+                    )
+                
+                else:
+                    st.info("Upload at least two resumes to compare candidates.")
