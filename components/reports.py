@@ -22,7 +22,7 @@ def show_reports(
         selected_candidate
     )
 
-    filename = "Candidate_Report.pdf"
+    filename = f"{candidate['Candidate'].replace(' ', '_')}_Report.pdf"
 
     generate_pdf_report(
         candidate,
