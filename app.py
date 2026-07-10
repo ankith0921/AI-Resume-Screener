@@ -298,9 +298,9 @@ if resume_files:
                 ascending=False
             ).reset_index(drop=True)
 
-            def get_candidate(name):
-                return ranking_df[
-                    ranking_df["Candidate"] == name
+            def get_candidate(df, name):
+                return df[
+                    df["Candidate"] == name
                 ].iloc[0]
 
             # Dashboard Statistics
@@ -582,7 +582,10 @@ if resume_files:
                     key="candidate_details"
                 )
 
-                candidate = get_candidate(selected_candidate)
+                candidate = get_candidate(
+                    ranking_df,
+                    selected_candidate
+                )
 
                 st.divider()
 
@@ -738,7 +741,10 @@ if resume_files:
                     key="report_candidate"
                 )
 
-                candidate = get_candidate(selected_candidate)
+                candidate = get_candidate(
+                    ranking_df,
+                    selected_candidate
+                )
 
                 filename = "Candidate_Report.pdf"
 
@@ -780,13 +786,15 @@ if resume_files:
                             key="candidate2"
                         )
                 
-                    candidate1 = ranking_df[
-                        ranking_df["Candidate"] == candidate1_name
-                    ].iloc[0]
-                
-                    candidate2 = ranking_df[
-                        ranking_df["Candidate"] == candidate2_name
-                    ].iloc[0]
+                    candidate1 = get_candidate(
+                        ranking_df,
+                        candidate1_name
+                    )
+                    
+                    candidate2 = get_candidate(
+                        ranking_df,
+                        candidate2_name
+                    ) 
                 
                     st.subheader("Comparison Summary")
                 
@@ -808,9 +816,25 @@ if resume_files:
                         else candidate2_name
                     )
                 
-                    st.success(f"Higher ATS Score: {ats_winner}")
-                    st.success(f"More Experience: {exp_winner}")
-                    st.success(f"Better Skill Match: {skill_winner}")
+                    col1, col2, col3 = st.columns(3)
+
+                    with col1:
+                        st.metric(
+                            "Higher ATS",
+                            ats_winner
+                        )
+                    
+                    with col2:
+                        st.metric(
+                            "Experience",
+                            exp_winner
+                        )
+                    
+                    with col3:
+                        st.metric(
+                            "Skill Match",
+                            skill_winner
+                        )
                 
                     comparison_df = pd.DataFrame({
                         "Attribute": [
