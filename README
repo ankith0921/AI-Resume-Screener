@@ -1,0 +1,313 @@
+# AI Resume Screening System
+
+> An AI-powered Applicant Tracking System (ATS) that analyzes, ranks, and compares candidate resumes against a job description using semantic similarity, skill matching, and resume analysis.
+
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.59-red)
+![Sentence Transformers](https://img.shields.io/badge/Sentence--Transformers-NLP-green)
+![License](https://img.shields.io/badge/License-MIT-success)
+
+---
+
+## Overview
+
+Recruiters often spend significant time manually reviewing resumes to identify suitable candidates. This project automates that process by leveraging Natural Language Processing (NLP) and semantic embeddings to compare resumes with a job description.
+
+The system extracts candidate information, evaluates resume relevance using semantic similarity, calculates an ATS score, identifies skill gaps, ranks candidates, and generates professional PDF reports.
+
+The application is built with a modular architecture using Python and Streamlit, making it easy to maintain and extend.
+
+---
+
+## Features
+
+### Resume Processing
+
+- Upload multiple resumes (PDF)
+- Upload Job Description (PDF)
+- Automatic text extraction
+- Candidate information extraction
+- Education parsing
+- Experience extraction
+- Skill extraction
+
+---
+
+### AI Resume Analysis
+
+- Semantic similarity matching using Sentence Transformers
+- ATS score calculation
+- Skill match percentage
+- Missing skills identification
+- Candidate ranking
+- AI-generated candidate summary
+- Hiring recommendation
+
+---
+
+### Interactive Dashboard
+
+- Candidate ranking table
+- Search candidates
+- Filter by degree
+- Filter by experience
+- Filter by ATS score
+- Interactive charts
+- CSV export
+
+---
+
+### Candidate Details
+
+- Personal information
+- Education details
+- Performance metrics
+- Skills analysis
+- AI-generated summary
+- Resume feedback
+
+---
+
+### Candidate Comparison
+
+- Compare any two candidates
+- ATS score comparison
+- Experience comparison
+- Skill match comparison
+- Side-by-side analysis
+
+---
+
+### Professional PDF Reports
+
+Generate recruiter-ready reports containing:
+
+- Candidate Information
+- Education
+- Performance Scores
+- Skills Analysis
+- AI Candidate Summary
+- Hiring Recommendation
+- Page numbering
+- Professional formatting
+
+---
+
+## Screenshots
+
+### Dashboard
+
+> Add `assets/screenshots/dashboard.png`
+
+![Dashboard](assets/screenshots/dashboard.png)
+
+---
+
+### Candidate Details
+
+![Candidate Details](assets/screenshots/candidate_details.png)
+
+---
+
+### Candidate Comparison
+
+![Comparison](assets/screenshots/comparison.png)
+
+---
+
+### Reports
+
+![Reports](assets/screenshots/reports.png)
+
+---
+
+### Sample PDF Report
+
+![PDF Report](assets/screenshots/pdf_report.png)
+
+---
+
+## Project Structure
+
+```text
+AI-Resume-Screener/
+│
+├── app.py
+│
+├── assets/
+│   ├── logo.png
+│   └── screenshots/
+│
+├── components/
+│   ├── dashboard.py
+│   ├── candidates.py
+│   ├── comparison.py
+│   └── reports.py
+│
+├── resumes/
+│
+├── utils/
+│   ├── ats_score.py
+│   ├── degree_mapping.py
+│   ├── education.py
+│   ├── embeddings.py
+│   ├── experience.py
+│   ├── feedback.py
+│   ├── helpers.py
+│   ├── parser.py
+│   ├── pdf_reader.py
+│   ├── ranking.py
+│   ├── ranking_engine.py
+│   ├── recommendation.py
+│   ├── report_generator.py
+│   ├── skills.py
+│   └── summary.py
+│
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Tech Stack
+
+### Programming Language
+
+- Python 3.12
+
+### Framework
+
+- Streamlit
+
+### AI / NLP
+
+- Sentence Transformers
+- Semantic Embeddings
+- Natural Language Processing (NLP)
+
+### Data Processing
+
+- Pandas
+- Scikit-learn
+
+### Visualization
+
+- Plotly
+
+### PDF
+
+- PyMuPDF
+- ReportLab
+
+---
+
+## Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/AI-Resume-Screener.git
+```
+
+Navigate to the project
+
+```bash
+cd AI-Resume-Screener
+```
+
+Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+Activate the virtual environment
+
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+source venv/bin/activate
+```
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the application
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## How It Works
+
+1. Upload a Job Description (PDF)
+2. Upload one or more candidate resumes
+3. Resume text is extracted
+4. Candidate details are parsed
+5. Sentence embeddings are generated
+6. Semantic similarity is calculated
+7. ATS score is computed
+8. Skill match percentage is calculated
+9. Candidates are ranked
+10. Recruiters can compare candidates and generate PDF reports
+
+---
+
+## ATS Scoring
+
+The ATS score is calculated using a combination of:
+
+- Semantic similarity between resume and job description
+- Skill match percentage
+- Experience analysis
+
+The final score helps recruiters quickly identify the most suitable candidates.
+
+---
+
+## Future Improvements
+
+- LLM-powered candidate evaluation
+- Interview question generation
+- Resume improvement suggestions
+- Recruiter authentication
+- Database integration
+- Resume keyword highlighting
+- Multi-language resume support
+- Cloud deployment
+
+---
+
+## Author
+
+**Ankith Kanthyappa Nataraj**
+
+Computer Science Engineer
+
+Interested in:
+
+- Artificial Intelligence
+- Applied Machine Learning
+- Natural Language Processing
+- Data Science
+
+**GitHub:** https://github.com/YOUR_USERNAME
+
+**LinkedIn:** https://linkedin.com/in/YOUR_PROFILE
+
+---
+
+## License
+
+This project is licensed under the MIT License.
