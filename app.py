@@ -697,23 +697,22 @@ if resume_files:
 
             st.divider()
 
-            if st.button("Download Candidate Report"):
+            filename = "Candidate_Report.pdf"
+
+            generate_pdf_report(
+                candidate,
+                filename
+            )
+
+            with open(filename, "rb") as pdf_file:
             
-                filename = "Candidate_Report.pdf"
-
-                generate_pdf_report(
-                    candidate,
-                    filename
+                st.download_button(
+                    label=":material/download: Download Candidate Report",
+                    data=pdf_file,
+                    file_name=filename,
+                    mime="application/pdf",
+                    use_container_width=True
                 )
-
-                with open(filename, "rb") as pdf_file:
-                
-                    st.download_button(
-                        label="⬇️ Download PDF",
-                        data=pdf_file,
-                        file_name=filename,
-                        mime="application/pdf"
-                    )
 
 # -------------------------------------------------
 # Summary

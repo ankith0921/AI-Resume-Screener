@@ -28,3 +28,5 @@ dist/
 output/*.csv
 output/*.xlsx
 output/*.json
+
+*.pdf

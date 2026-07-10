@@ -1,5 +1,13 @@
-from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Image,
+    Table,
+    TableStyle
+)
 from reportlab.lib.styles import getSampleStyleSheet
+from datetime import datetime
+from reportlab.lib import colors
 
 styles = getSampleStyleSheet()
 
@@ -13,30 +21,56 @@ def generate_pdf_report(candidate, filename):
 
     story = []
 
+    logo = Image("assets/logo.png")
+
+    logo.drawHeight = 60
+    logo.drawWidth = 60
+    
+    story.append(logo)
+    
     story.append(
-    Paragraph(
-        "<b><font size=18>AI Resume Screening Report</font></b>",
-        styles["Title"]
+        Paragraph("<br/>", styles["Normal"])
+    )
+
+    story.append(
+        Paragraph(
+            "<b><font size=18>AI Resume Screening Report</font></b>",
+            styles["Title"]
         )
     )
 
-    story.append(Paragraph("<br/><br/>", styles["Normal"]))
-
     story.append(
-    Paragraph("<b>Candidate Information</b>", styles["Heading2"])
+        Paragraph(
+            f"<b>Generated On:</b> {datetime.now().strftime('%d %B %Y, %I:%M %p')}",
+            styles["Normal"]
+        )
     )
 
     story.append(
-        Paragraph(f"<b>Name:</b> {candidate['Candidate']}", styles["Normal"])
+        Paragraph("<b>Candidate Information</b>", styles["Heading2"])
     )
 
-    story.append(
-        Paragraph(f"<b>Email:</b> {candidate['Email']}", styles["Normal"])
+    candidate_table = Table(
+        [
+            ["Name", candidate["Candidate"]],
+            ["Email", candidate["Email"]],
+            ["Phone", candidate["Phone"]]
+        ],
+        colWidths=[150, 300]
     )
 
-    story.append(
-        Paragraph(f"<b>Phone:</b> {candidate['Phone']}", styles["Normal"])
+    candidate_table.setStyle(
+        TableStyle([
+            ("BACKGROUND", (0, 0), (0, -1), colors.lightgrey),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE")
+        ])
     )
+
+    story.append(candidate_table)
 
     story.append(
         Paragraph("<br/>", styles["Normal"])
@@ -46,40 +80,29 @@ def generate_pdf_report(candidate, filename):
         Paragraph("<b>Education</b>", styles["Heading2"])
     )
 
-    story.append(
-        Paragraph(
-            f"<b>Degree:</b> {candidate['Degree']}",
-            styles["Normal"]
-        )
+    education_table = Table(
+        [
+            ["Degree", candidate["Degree"]],
+            ["Branch", candidate["Branch"]],
+            ["University", candidate["University/College"]],
+            ["Graduation Year", candidate["Graduation Year"]],
+            ["CGPA", candidate["CGPA"]]
+        ],
+        colWidths=[150, 300]
     )
 
-    story.append(
-        Paragraph(
-            f"<b>Branch:</b> {candidate['Branch']}",
-            styles["Normal"]
-        )
+    education_table.setStyle(
+        TableStyle([
+            ("BACKGROUND", (0, 0), (0, -1), colors.lightgrey),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE")
+        ])
     )
 
-    story.append(
-        Paragraph(
-            f"<b>University/College:</b> {candidate['University/College']}",
-            styles["Normal"]
-        )
-    )
-
-    story.append(
-        Paragraph(
-            f"<b>Graduation Year:</b> {candidate['Graduation Year']}",
-            styles["Normal"]
-        )
-    )
-
-    story.append(
-        Paragraph(
-            f"<b>CGPA:</b> {candidate['CGPA']}",
-            styles["Normal"]
-        )
-    )
+    story.append(education_table)
 
     story.append(
         Paragraph("<br/>", styles["Normal"])
@@ -88,35 +111,30 @@ def generate_pdf_report(candidate, filename):
     story.append(
         Paragraph("<b>Performance Scores</b>", styles["Heading2"])
     )
-
-    story.append(
-        Paragraph(
-            f"<b>ATS Score:</b> {candidate['ATS Score']}%",
-            styles["Normal"]
-        )
+    
+    performance_table = Table(
+        [
+            ["ATS Score", f"{candidate['ATS Score']}%"],
+            ["Semantic Score", f"{candidate['Semantic Score']}%"],
+            ["Skill Match", f"{candidate['Skill Match (%)']}%"],
+            ["Experience", f"{candidate['Experience (Years)']} Years"]
+        ],
+        colWidths=[150, 300]
     )
-
-    story.append(
-        Paragraph(
-            f"<b>Semantic Score:</b> {candidate['Semantic Score']}%",
-            styles["Normal"]
-        )
+    
+    performance_table.setStyle(
+        TableStyle([
+            ("BACKGROUND", (0, 0), (0, -1), colors.lightgrey),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE")
+        ])
     )
-
-    story.append(
-        Paragraph(
-            f"<b>Skill Match:</b> {candidate['Skill Match (%)']}%",
-            styles["Normal"]
-        )
-    )
-
-    story.append(
-        Paragraph(
-            f"<b>Experience:</b> {candidate['Experience (Years)']} Years",
-            styles["Normal"]
-        )
-    )
-
+    
+    story.append(performance_table)
+    
     story.append(
         Paragraph("<br/>", styles["Normal"])
     )
