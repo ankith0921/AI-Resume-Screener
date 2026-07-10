@@ -25,6 +25,7 @@ from utils.feedback import generate_feedback
 from utils.report_generator import generate_pdf_report
 from components.dashboard import show_dashboard
 from components.candidates import show_candidates
+from components.reports import show_reports
 
 # -------------------------------------------------
 # Page Configuration
@@ -366,39 +367,11 @@ if resume_files:
                     get_candidate
                 )
 
-                
-            
             elif page == "Reports":
-            
-                st.header("Reports")
-
-                selected_candidate = st.selectbox(
-                    "Select Candidate",
-                    ranking_df["Candidate"],
-                    key="report_candidate"
-                )
-
-                candidate = get_candidate(
+                show_reports(
                     ranking_df,
-                    selected_candidate
+                    get_candidate
                 )
-
-                filename = "Candidate_Report.pdf"
-
-                generate_pdf_report(
-                    candidate,
-                    filename
-                )
-
-                with open(filename, "rb") as pdf_file:
-                
-                    st.download_button(
-                        label=":material/download: Download Candidate Report",
-                        data=pdf_file,
-                        file_name=filename,
-                        mime="application/pdf",
-                        use_container_width=True
-                    )
 
             elif page == "Comparison":
 
