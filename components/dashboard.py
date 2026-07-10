@@ -15,6 +15,33 @@ def show_dashboard(
 
     st.header("Candidate Ranking Results")
 
+    candidate_count = len(ranking_df)
+    average_ats = ranking_df["ATS Score"].mean()
+    top_ats = ranking_df["ATS Score"].max()
+    average_experience = (
+        pd.to_numeric(ranking_df["Experience (Years)"], errors="coerce")
+        .fillna(0)
+        .mean()
+    )
+
+    st.subheader("Recruitment Dashboard")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Candidates", candidate_count)
+
+    with col2:
+        st.metric("Average ATS", f"{average_ats:.2f}%")
+
+    with col3:
+        st.metric("Top ATS", f"{top_ats:.2f}%")
+
+    with col4:
+        st.metric("Avg Experience", f"{average_experience:.1f} Years")
+
+    st.divider()
+
     filter1, filter2, filter3, filter4 = st.columns(4)
 
     with filter1:

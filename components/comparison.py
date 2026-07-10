@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
+from utils.helpers import get_candidate
 
 
 def show_comparison(
-    ranking_df,
-    get_candidate
+    ranking_df
 ):
     """
     Displays candidate comparison page.

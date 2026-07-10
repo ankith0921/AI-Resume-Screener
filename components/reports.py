@@ -1,11 +1,10 @@
 import streamlit as st
-
 from utils.report_generator import generate_pdf_report
+from utils.helpers import get_candidate
 
 
 def show_reports(
-    ranking_df,
-    get_candidate
+    ranking_df
 ):
     """
     Displays report generation page.

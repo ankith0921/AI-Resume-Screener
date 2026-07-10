@@ -1,9 +1,6 @@
 import streamlit as st
-from components.candidates import show_candidates
-from components.dashboard import show_dashboard
 from utils.pdf_reader import extract_text_from_pdf
 from utils.embeddings import generate_embedding
-from utils.ranking import calculate_similarity
 import pandas as pd
 from utils.parser import (
     extract_name,
@@ -17,12 +14,8 @@ from utils.ats_score import (
 )
 from utils.experience import extract_experience
 from utils.education import extract_education
-from utils.summary import generate_summary
-from utils.recommendation import get_recommendation
 from utils.degree_mapping import DEGREE_MAPPING
-import plotly.express as px
-from utils.feedback import generate_feedback
-from utils.report_generator import generate_pdf_report
+from utils.ranking_engine import rank_candidates
 from components.dashboard import show_dashboard
 from components.candidates import show_candidates
 from components.reports import show_reports
@@ -199,146 +192,23 @@ if resume_files:
     # -------------------------------
     if jd_embedding is not None:
         with st.spinner("Generating embeddings and evaluating resumes..."):
-
-            ranking_results = []
-
             progress = st.progress(0)
             status = st.empty()
 
-            for i, candidate in enumerate(resume_data):
-            
-                progress.progress((i + 1) / len(resume_data))
-
-                name = candidate["candidate_name"]
-
-                if name == "Unknown Candidate":
-                    name = candidate["filename"]
-
-                status.text(f"Processing: {name}")
-
-                if candidate["text"].strip():
-                    resume_embedding = generate_embedding(candidate["text"])
-                else:
-                    st.warning(
-                        f"{candidate['filename']} contains no extractable text."
-                    )
-                    continue
-
-                similarity = calculate_similarity(
-                    jd_embedding,
-                    resume_embedding
-                )
-                
-                skill_match = calculate_skill_match(
-                    candidate["skills"],
-                    jd_skills
-                )
-                
-                ats_score = calculate_ats_score(
-                    similarity,
-                    skill_match
-                )
-                
-                # Compare resume skills with JD skills
-                matched_skills = list(
-                    set(candidate["skills"]) &
-                    set(jd_skills)
-                )
-                
-                missing_skills = list(
-                    set(jd_skills) -
-                    set(candidate["skills"])
-                )
-                
-                ranking_results.append({
-
-                    "Candidate": candidate["candidate_name"],
-
-                    "Degree": candidate["education"]["Degree"],
-
-                    "Branch": candidate["education"]["Branch"],
-
-                    "University/College": candidate["education"]["University"],
-
-                    "Graduation Year": candidate["education"]["Graduation Year"],
-
-                    "CGPA": candidate["education"]["CGPA"],
-
-                    "Experience (Years)": candidate["experience"],
-
-                    "ATS Score": ats_score,
-                
-                    "Semantic Score": round(similarity, 2),
-                
-                    "Skill Match (%)": round(skill_match, 2),
-
-                    "Summary": generate_summary(candidate),
-                
-                    "Email": candidate["email"],
-                
-                    "Phone": candidate["phone"],
-                
-                    "Resume": candidate["filename"],
-                
-                    "Matched Skills": ", ".join(sorted(matched_skills)) if matched_skills else "None",
-                
-                    "Missing Skills": ", ".join(sorted(missing_skills)) if missing_skills else "None"
-                
-                })
+            ranking_df = rank_candidates(
+                resume_data,
+                jd_embedding,
+                jd_skills,
+                progress=progress,
+                status=status
+            )
 
             progress.empty()
             status.empty()
 
             st.success(
-                f"Successfully analyzed {len(ranking_results)} resume(s)."
+                f"Successfully analyzed {len(ranking_df)} resume(s)."
             )
-
-            ranking_df = pd.DataFrame(ranking_results)
-
-            ranking_df["Semantic Score"] = ranking_df["Semantic Score"].round(2)
-            ranking_df["Skill Match (%)"] = ranking_df["Skill Match (%)"].round(2)
-            ranking_df["ATS Score"] = ranking_df["ATS Score"].round(2)
-
-            ranking_df = ranking_df.sort_values(
-                by="ATS Score",
-                ascending=False
-            ).reset_index(drop=True)
-
-            def get_candidate(df, name):
-                return df[
-                    df["Candidate"] == name
-                ].iloc[0]
-
-            # Dashboard Statistics
-
-            candidate_count = len(ranking_df)
-
-            average_ats = ranking_df["ATS Score"].mean()
-
-            top_ats = ranking_df["ATS Score"].max()
-
-            ranking_df["Experience (Years)"] = pd.to_numeric(
-                ranking_df["Experience (Years)"],
-                errors="coerce"
-            )
-
-            average_experience = ranking_df["Experience (Years)"].fillna(0).mean()
-
-            st.subheader("Recruitment Dashboard")
-
-            col1, col2, col3, col4 = st.columns(4)
-
-            with col1:
-                st.metric("Candidates", candidate_count)
-
-            with col2:
-                st.metric("Average ATS", f"{average_ats:.2f}%")
-
-            with col3:
-                st.metric("Top ATS", f"{top_ats:.2f}%")
-
-            with col4:
-                st.metric("Avg Experience", f"{average_experience:.1f} Years")
 
             st.divider()
             st.subheader("Navigation")
@@ -363,19 +233,10 @@ if resume_files:
                 )
 
             elif page == "Candidates":
-                show_candidates(
-                    ranking_df,
-                    get_candidate
-                )
+                show_candidates(ranking_df)
 
             elif page == "Comparison":
-                show_comparison(
-                    ranking_df,
-                    get_candidate
-                )
+                show_comparison(ranking_df)
 
             elif page == "Reports":
-                show_reports(
-                    ranking_df,
-                    get_candidate
-                )
+                show_reports(ranking_df)

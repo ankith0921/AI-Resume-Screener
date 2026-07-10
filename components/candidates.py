@@ -2,11 +2,11 @@ import streamlit as st
 
 from utils.feedback import generate_feedback
 from utils.recommendation import get_recommendation
+from utils.helpers import get_candidate
 
 
 def show_candidates(
-    ranking_df,
-    get_candidate
+    ranking_df
 ):
     """
     Displays candidate details page.
