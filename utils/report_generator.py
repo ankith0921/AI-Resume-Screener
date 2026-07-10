@@ -23,8 +23,8 @@ def generate_pdf_report(candidate, filename):
 
     logo = Image("assets/logo.png")
 
-    logo.drawHeight = 60
-    logo.drawWidth = 60
+    logo.drawHeight = 100
+    logo.drawWidth = 100
     
     story.append(logo)
     
@@ -111,7 +111,7 @@ def generate_pdf_report(candidate, filename):
     story.append(
         Paragraph("<b>Performance Scores</b>", styles["Heading2"])
     )
-    
+
     performance_table = Table(
         [
             ["ATS Score", f"{candidate['ATS Score']}%"],
@@ -121,7 +121,7 @@ def generate_pdf_report(candidate, filename):
         ],
         colWidths=[150, 300]
     )
-    
+
     performance_table.setStyle(
         TableStyle([
             ("BACKGROUND", (0, 0), (0, -1), colors.lightgrey),
@@ -132,9 +132,9 @@ def generate_pdf_report(candidate, filename):
             ("VALIGN", (0, 0), (-1, -1), "MIDDLE")
         ])
     )
-    
+
     story.append(performance_table)
-    
+
     story.append(
         Paragraph("<br/>", styles["Normal"])
     )
