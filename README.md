@@ -184,6 +184,8 @@ Each generated report includes:
 
 ---
 
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success)]([YOUR_STREAMLIT_URL](https://ai-resume-screener-hcwkeqeyb8jvef8he7pivc.streamlit.app/))
+
 ## About the Author
 
 **Ankith Kanthyappa Nataraj**
