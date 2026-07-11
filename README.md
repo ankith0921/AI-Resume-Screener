@@ -134,8 +134,8 @@ Generate recruiter-ready PDF reports containing:
 
 ## Sample PDF Report
 
-![PDF Report](assets/screenshots/pdf_report_1.png)
-![PDF Report](assets/screenshots/pdf_report_2.png)
+![PDF Report](assets/screenshots/pdf_report_page_1.png)
+![PDF Report](assets/screenshots/pdf_report_page_2.png)
 
 ---
 
