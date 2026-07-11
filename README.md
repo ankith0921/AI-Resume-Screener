@@ -195,7 +195,7 @@ Each generated report includes:
 Passionate about **Artificial Intelligence**, **Applied Machine Learning**, **Natural Language Processing**, and **Data Science**.
 
 - GitHub: [ankith0921](https://github.com/ankith0921)
-- LinkedIn: *(Add your LinkedIn profile here)*
+- LinkedIn: *www.linkedin.com/in/ankith-kn-9b7a6329b*
 
 ---
 
