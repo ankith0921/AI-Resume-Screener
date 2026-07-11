@@ -155,10 +155,9 @@ The ATS score combines three key metrics:
 
 ### Recommendation System
 Based on ATS score thresholds:
-- 🟢 **≥ 85%** → Strongly Recommended
-- 🔵 **≥ 70%** → Recommended
-- 🟡 **≥ 55%** → Consider
-- 🔴 **< 55%** → Not Recommended
+- 🟩 **>= 75** → Recommended
+- 🟨 **>= 55** → Consider
+- 🟥 **< 55%** → Not Recommended
 
 ---
 
