@@ -1,204 +1,341 @@
 # AI Resume Screening System
 
-An intelligent, AI-powered Applicant Tracking System (ATS) built with **Streamlit**, **Sentence Transformers**, and **Python**. This application automates resume screening by analyzing, ranking, and comparing candidate resumes against job descriptions using semantic similarity, skill matching, and comprehensive resume analysis. It generates professional PDF reports for recruiters to streamline hiring workflows.
+An intelligent, AI-powered Applicant Tracking System (ATS) built with **Python**, **Streamlit**, and **Sentence Transformers**. The application automates resume screening by analyzing, ranking, and comparing candidate resumes against a job description using semantic similarity, skill matching, and resume analysis. It also generates professional recruiter-ready PDF reports to streamline the hiring process.
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success)](https://ai-resume-screener-hcwkeqeyb8jvef8he7pivc.streamlit.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black)](https://github.com/ankith0921/AI-Resume-Screener)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.59-red)
+![License](https://img.shields.io/badge/License-MIT-success)
 
 ---
 
-## Features
+## Overview
+
+Recruiters often spend significant time manually reviewing resumes to identify suitable candidates. This project automates that process by leveraging **Natural Language Processing (NLP)** and **Sentence Transformer embeddings** to compare resumes with a job description.
+
+The system extracts candidate information, evaluates resume relevance using semantic similarity, calculates an ATS score, identifies skill gaps, ranks candidates, and generates professional PDF reports.
+
+> **Note:** The first launch may take **30–60 seconds** while the Sentence Transformer model is downloaded and cached.
+
+---
+
+# Features
+
+### Resume Processing
 
 - Upload Job Description (PDF)
 - Upload Multiple Candidate Resumes (PDF)
 - Automatic Resume Parsing
-- Semantic Similarity Matching
-- ATS Score Calculation
-- Skill Match Analysis
-- Missing Skills Identification
-- Candidate Ranking Dashboard
-- Candidate Search & Filters
-- Side-by-Side Candidate Comparison
-- AI-Generated Candidate Summaries
-- Hiring Recommendations with Dynamic Scoring
-- Professional PDF Report Generation
-- Interactive Analytics Dashboard
-- CSV Export Functionality
-- Clean & Modular Streamlit Interface
+- Candidate Information Extraction
+- Education Parsing
+- Experience Extraction
+- Skill Extraction
 
 ---
 
-## Tech Stack
+### AI Resume Analysis
+
+- Semantic Similarity Matching
+- ATS Score Calculation
+- Skill Match Percentage
+- Missing Skills Identification
+- AI Candidate Summary
+- Hiring Recommendation
+
+---
+
+### Dashboard
+
+- Candidate Ranking
+- Search Candidates
+- Degree Filter
+- Experience Filter
+- ATS Score Filter
+- Interactive Analytics
+- CSV Export
+
+---
+
+### Candidate Details
+
+- Personal Information
+- Education Details
+- Performance Metrics
+- Skills Analysis
+- Resume Summary
+- Hiring Recommendation
+
+---
+
+### Candidate Comparison
+
+- Compare Two Candidates
+- ATS Score Comparison
+- Experience Comparison
+- Skill Match Comparison
+- Side-by-Side Analysis
+
+---
+
+### PDF Reports
+
+Generate recruiter-ready PDF reports containing:
+
+- Candidate Information
+- Education Details
+- Performance Scores
+- Skills Analysis
+- AI Candidate Summary
+- Hiring Recommendation
+- Professional Formatting
+- Automatic Page Numbers
+
+---
+
+# Screenshots
+
+## Home
+
+![Home](assets/screenshots/home.png)
+
+---
+
+## Dashboard
+
+![Dashboard](assets/screenshots/dashboard.png)
+
+---
+
+## Analytics
+
+![Analytics](assets/screenshots/analytics.png)
+
+---
+
+## Candidate Details
+
+![Candidate Details](assets/screenshots/candidate_details.png)
+
+---
+
+## Candidate Comparison
+
+![Comparison](assets/screenshots/comparison.png)
+
+---
+
+## Reports
+
+![Reports](assets/screenshots/reports.png)
+
+---
+
+## Sample PDF Report
+
+![PDF Report](assets/screenshots/pdf_report.png)
+
+---
+
+# Project Structure
+
+```text
+AI-Resume-Screener/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+│
+├── assets/
+│   ├── logo.png
+│   └── screenshots/
+│
+├── components/
+│   ├── dashboard.py
+│   ├── candidates.py
+│   ├── comparison.py
+│   └── reports.py
+│
+├── resumes/
+│
+├── utils/
+│   ├── ats_score.py
+│   ├── degree_mapping.py
+│   ├── education.py
+│   ├── embeddings.py
+│   ├── experience.py
+│   ├── feedback.py
+│   ├── helpers.py
+│   ├── parser.py
+│   ├── pdf_reader.py
+│   ├── ranking.py
+│   ├── ranking_engine.py
+│   ├── recommendation.py
+│   ├── report_generator.py
+│   ├── skills.py
+│   └── summary.py
+```
+
+---
+
+# Tech Stack
 
 | Category | Technologies |
-|----------|---------------|
-| **Language** | Python |
+|----------|--------------|
+| **Programming Language** | Python |
 | **Framework** | Streamlit |
-| **AI/NLP** | Sentence Transformers, Semantic Similarity, NLP |
+| **AI / NLP** | Sentence Transformers, Semantic Similarity, NLP |
 | **Data Processing** | Pandas, Scikit-learn |
 | **Visualization** | Plotly |
 | **PDF Processing** | PyMuPDF, ReportLab |
 
 ---
 
-## Project Structure
+# Installation
 
-```
-AI-Resume-Screener/
-├── app.py                          # Main Streamlit application entry point
-├── requirements.txt                # Project dependencies
-├── README.md                       # This file
-│
-├── assets/
-│   ├── logo.png                    # Application logo
-│   └── screenshots/                # UI screenshots
-│
-├── components/                     # UI component modules
-│   ├── dashboard.py                # Analytics dashboard
-│   ├── candidates.py               # Individual candidate details
-│   ├── comparison.py               # Side-by-side comparison
-│   └── reports.py                  # PDF report generation
-│
-├── utils/                          # Utility modules
-    ├── ats_score.py                # ATS scoring algorithm
-    ├── degree_mapping.py           # Education degree normalization
-    ├── education.py                # Education parsing & analysis
-    ├── embeddings.py               # Semantic embedding generation
-    ├── experience.py               # Experience analysis
-    ├── feedback.py                 # System feedback logic
-    ├── helpers.py                  # Shared utility functions
-    ├── parser.py                   # Resume parsing logic
-    ├── pdf_reader.py               # PDF text extraction
-    ├── ranking.py                  # Candidate ranking algorithms
-    ├── ranking_engine.py           # Main ranking orchestration
-    ├── recommendation.py           # Hiring recommendations
-    ├── report_generator.py         # Professional PDF generation
-    ├── skills.py                   # Skill extraction & matching
-    └── summary.py                  # AI-generated summaries
+### Clone the repository
 
-```
-
----
-
-## Installation
-
-### Prerequisites
-- Python 3.8 or higher
-- pip (Python package manager)
-- Git
-
-### Setup Steps
-
-**1. Clone the repository**
 ```bash
 git clone https://github.com/ankith0921/AI-Resume-Screener.git
+```
+
+### Navigate to the project
+
+```bash
 cd AI-Resume-Screener
 ```
 
-**2. Create a virtual environment**
+### Create a virtual environment
+
 ```bash
 python -m venv venv
 ```
 
-**3. Activate the virtual environment**
+### Activate the environment
 
-*Windows:*
+**Windows**
+
 ```bash
 venv\Scripts\activate
 ```
 
-*Linux / macOS:*
+**Linux / macOS**
+
 ```bash
 source venv/bin/activate
 ```
 
-**4. Install dependencies**
+### Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## Running the Application
+# Running the Application
 
-Start the Streamlit server:
 ```bash
 streamlit run app.py
 ```
 
-The application will automatically open in your browser at:
-```
+The application opens automatically at:
+
+```text
 http://localhost:8501
 ```
 
 ---
 
-## How It Works
+# How It Works
 
-1. **Upload Job Description** - Provide a PDF with job requirements
-2. **Upload Resumes** - Add one or more candidate PDFs
-3. **Automatic Parsing** - System extracts text and structured data
-4. **Semantic Matching** - Uses Sentence Transformers for intelligent comparison
-5. **ATS Scoring** - Calculates match based on skills, experience, and similarity
-6. **Ranking Dashboard** - View candidates ranked by relevance
-7. **Comparison** - Compare candidates side-by-side
-8. **PDF Reports** - Generate professional hiring recommendation reports
-
----
-
-## Scoring & Analysis
-
-### ATS Score
-The ATS score combines three key metrics:
-- **Semantic Similarity**: How closely resume content matches job description
-- **Skill Match**: Percentage of required skills candidate possesses
-- **Experience Analysis**: Years of relevant experience
-
-### Recommendation System
-Based on ATS score thresholds:
-- 🟩 **>= 75** → Recommended
-- 🟨 **>= 55** → Consider
-- 🟥 **< 55%** → Not Recommended
+1. Upload a Job Description (PDF)
+2. Upload one or more candidate resumes
+3. Resume text is extracted
+4. Candidate information is parsed
+5. Sentence embeddings are generated
+6. Semantic similarity is calculated
+7. ATS score is computed
+8. Skill match percentage is calculated
+9. Candidates are ranked automatically
+10. Recruiters can compare candidates and generate PDF reports
 
 ---
 
-## PDF Report Features
+# ATS Scoring
 
-Each generated report includes:
-- Candidate Information (Name, Email, Phone)
-- Education Details (Degree, Branch, University, CGPA)
-- Performance Scores (ATS, Semantic, Skill Match, Experience)
-- Skills Analysis (Matched & Missing Skills)
-- AI-Generated Candidate Summary
-- Dynamic Hiring Recommendation
-- Professional Formatting with Page Numbers
+The ATS score combines multiple factors:
+
+- Semantic similarity between the resume and job description
+- Skill match percentage
+- Relevant work experience
+
+### Hiring Recommendation
+
+| ATS Score | Recommendation |
+|-----------|---------------|
+| **75% and above** | 🟩 Recommended |
+| **55% – 74%** | 🟨 Consider |
+| **Below 55%** | 🟥 Not Recommended |
 
 ---
 
-## Future Roadmap
+# PDF Report
+
+Each generated report contains:
+
+- Candidate Information
+- Education Details
+- ATS Score
+- Semantic Similarity Score
+- Skill Match Percentage
+- Experience
+- Skills Analysis
+- AI Candidate Summary
+- Hiring Recommendation
+- Professional Formatting
+- Automatic Page Numbers
+
+---
+
+# Future Improvements
 
 - LLM-powered candidate evaluation
 - Resume improvement suggestions
-- Recruiter authentication & access control
-- Database integration for persistence
+- Recruiter authentication
+- Database integration
 - Resume keyword highlighting
+- DOCX resume support
 - Multi-language resume support
-- Cloud deployment options
+- REST API integration
+- Docker support
 
 ---
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success)]([YOUR_STREAMLIT_URL](https://ai-resume-screener-hcwkeqeyb8jvef8he7pivc.streamlit.app/))
+# About the Author
 
-## About the Author
+## Ankith Kanthyappa Nataraj
 
-**Ankith Kanthyappa Nataraj**
+Computer Science Engineering Graduate with interests in:
 
-*Computer Science Engineer*
+- Artificial Intelligence
+- Machine Learning
+- Natural Language Processing
+- Data Science
+- Software Engineering
 
-Passionate about **Artificial Intelligence**, **Applied Machine Learning**, **Natural Language Processing**, and **Data Science**.
+**GitHub**
 
-- GitHub: [ankith0921](https://github.com/ankith0921)
-- LinkedIn: *www.linkedin.com/in/ankith-kn-9b7a6329b*
+https://github.com/ankith0921
+
+**LinkedIn**
+
+https://www.linkedin.com/in/ankith-kn-9b7a6329b
 
 ---
 
-## License
+# License
 
-This project is licensed under the **MIT License** - see LICENSE file for details.
+This project is licensed under the **MIT License**.
+
+See the `LICENSE` file for details.
