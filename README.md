@@ -57,24 +57,22 @@ AI-Resume-Screener/
 │   └── reports.py                  # PDF report generation
 │
 ├── utils/                          # Utility modules
-│   ├── ats_score.py                # ATS scoring algorithm
-│   ├── degree_mapping.py           # Education degree normalization
-│   ├── education.py                # Education parsing & analysis
-│   ├── embeddings.py               # Semantic embedding generation
-│   ├── experience.py               # Experience analysis
-│   ├── feedback.py                 # System feedback logic
-│   ├── helpers.py                  # Shared utility functions
-│   ├── parser.py                   # Resume parsing logic
-│   ├── pdf_reader.py               # PDF text extraction
-│   ├── ranking.py                  # Candidate ranking algorithms
-│   ├── ranking_engine.py           # Main ranking orchestration
-│   ├── recommendation.py           # Hiring recommendations
-│   ├── report_generator.py         # Professional PDF generation
-│   ├── skills.py                   # Skill extraction & matching
-│   └── summary.py                  # AI-generated summaries
-│
-└── resumes/                        # Uploaded resume storage
-    └── job_descriptions/           # Uploaded job descriptions
+    ├── ats_score.py                # ATS scoring algorithm
+    ├── degree_mapping.py           # Education degree normalization
+    ├── education.py                # Education parsing & analysis
+    ├── embeddings.py               # Semantic embedding generation
+    ├── experience.py               # Experience analysis
+    ├── feedback.py                 # System feedback logic
+    ├── helpers.py                  # Shared utility functions
+    ├── parser.py                   # Resume parsing logic
+    ├── pdf_reader.py               # PDF text extraction
+    ├── ranking.py                  # Candidate ranking algorithms
+    ├── ranking_engine.py           # Main ranking orchestration
+    ├── recommendation.py           # Hiring recommendations
+    ├── report_generator.py         # Professional PDF generation
+    ├── skills.py                   # Skill extraction & matching
+    └── summary.py                  # AI-generated summaries
+
 ```
 
 ---
