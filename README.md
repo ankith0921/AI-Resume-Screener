@@ -115,7 +115,8 @@ Generate recruiter-ready PDF reports containing:
 
 ## Candidate Details
 
-![Candidate Details](assets/screenshots/candidate_details.png)
+![Candidate Details](assets/screenshots/candidate_details_1.png)
+![Candidate Details](assets/screenshots/candidate_details_2.png)
 
 ---
 
@@ -133,7 +134,8 @@ Generate recruiter-ready PDF reports containing:
 
 ## Sample PDF Report
 
-![PDF Report](assets/screenshots/pdf_report.png)
+![PDF Report](assets/screenshots/pdf_report_1.png)
+![PDF Report](assets/screenshots/pdf_report_2.png)
 
 ---
 
